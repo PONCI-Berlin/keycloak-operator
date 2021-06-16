@@ -61,9 +61,11 @@ func PostgresqlServiceReconciled(currentState *v1.Service, dbSecret *v1.Secret, 
 	reconciled := currentState.DeepCopy()
 	if !serviceTypeExternal {
 		reconciled.Spec.Type = v1.ServiceTypeClusterIP
-		reconciled.Spec.Selector = map[string]string{
-			"app":       ApplicationName,
-			"component": PostgresqlDeploymentComponent,
+		if !headless {
+			reconciled.Spec.Selector = map[string]string{
+				"app":       ApplicationName,
+				"component": PostgresqlDeploymentComponent,
+			}
 		}
 		reconciled.Spec.Ports = []v1.ServicePort{
 			{
