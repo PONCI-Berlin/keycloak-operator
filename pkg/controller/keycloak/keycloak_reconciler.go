@@ -377,8 +377,10 @@ func (i *KeycloakReconciler) getKeycloakIngressDesiredState(clusterState *common
 
 func (i *KeycloakReconciler) getPostgresqlServiceEndpointsDesiredState(clusterState *common.ClusterState, cr *kc.Keycloak) common.ClusterAction {
 	if clusterState.PostgresqlServiceEndpoints == nil {
-		// This happens only during initial run
-		return nil
+		return common.GenericCreateAction{
+			Ref: model.PostgresqlServiceEndpointsReconciled(cr, model.PostgresqlServiceEndpoints(cr), clusterState.DatabaseSecret),
+			Msg: "Create External Database Service Endpoints",
+		}
 	}
 	return common.GenericUpdateAction{
 		Ref: model.PostgresqlServiceEndpointsReconciled(cr, clusterState.PostgresqlServiceEndpoints, clusterState.DatabaseSecret),
